@@ -1,5 +1,5 @@
 """
-LangChain Example 3: Self-Reflection / Self-Critique Pattern
+LangChain Example 3: Chain-Of-Thought with Self-Reflection / Self-Critique Pattern
 Demonstrates using the LLM to improve its own output: Draft -> Critique -> Revise.
 """
 
@@ -65,6 +65,6 @@ print("="*80)
 print("Self-Reflection Pattern: Draft -> Critique -> Revise")
 print("="*80)
 
-result = pipeline.invoke({"question": "Explain LCEL in two sentences."})
+result = pipeline.invoke({"question": "Explain attention mechanism in LLMs, in two lines"})
 print(f"\nFinal Revised Answer:\n{result}")
 
