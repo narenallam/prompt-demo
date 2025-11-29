@@ -5,6 +5,7 @@ Demonstrates the power and simplicity of LCEL with the pipe operator.
 
 from dotenv import load_dotenv
 load_dotenv()
+import os
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
