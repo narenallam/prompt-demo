@@ -18,7 +18,7 @@ def print_header():
         model_name = config.gemini_model
     else:
         model_name = "unknown"
-    
+
     print("\n" + "=" * 80)
     print("  PROMPT ENGINEERING DEMOS")
     print(f"  Provider: {config.provider.upper()}")
@@ -33,34 +33,34 @@ def test_connection():
     try:
         llm = get_llm()
         test_response = llm.invoke("Say 'Hello' in one word.")
-        print(f"✓ Connection successful! Model responded: {test_response}\n")
+        print(f" Connection successful! Model responded: {test_response}\n")
         return True
     except Exception as e:
-        print(f"❌ Connection failed: {e}\n")
+        print(f" Connection failed: {e}\n")
         return False
 
 
 def run_demo(module_name: str):
     """Run a demo module."""
     try:
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print(f"Running {module_name}...")
-        print('='*80)
-        
+        print("=" * 80)
+
         # Import and run the demo
         module = __import__(module_name)
-        if hasattr(module, 'main'):
+        if hasattr(module, "main"):
             module.main()
         else:
             print(f"Warning: {module_name} does not have a main() function")
     except Exception as e:
-        print(f"❌ Error running {module_name}: {e}")
+        print(f" Error running {module_name}: {e}")
 
 
 def main():
     """Run all demos."""
     print_header()
-    
+
     if not test_connection():
         print("\nPlease check your configuration:")
         config = get_config()
@@ -75,7 +75,7 @@ def main():
             print("1. GOOGLE_API_KEY is set in environment or config")
             print(f"2. Model '{config.gemini_model}' is available")
         sys.exit(1)
-    
+
     # List of demos to run (in teaching order)
     demos = [
         "1_demo_basic_invoke",
@@ -91,10 +91,10 @@ def main():
         "11_demo_structured_sections",
         "12_demo_streaming",
     ]
-    
+
     for demo in demos:
         run_demo(demo)
-    
+
     print("\n" + "=" * 80)
     print("  ALL DEMOS COMPLETED")
     print("=" * 80 + "\n")
@@ -102,4 +102,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

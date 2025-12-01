@@ -17,10 +17,10 @@ def print_section(title: str):
 def main():
     """Run structured sections demo."""
     print_section("Demo: Structured Section Prompts")
-    
+
     llm = get_llm()
     print_provider_info_for_llm(llm)
-    
+
     # Structured Example 1: Markdown Sections
     print("--- Example 1: Markdown Section Structure ---")
     markdown_sections = """# ROLE
@@ -49,12 +49,14 @@ Design a CI/CD pipeline for a Python web application.
 ## 3. Configuration Examples
 ## 4. Best Practices
 ## 5. Monitoring & Alerts"""
-    
+
     print(f"\nPrompt:\n{markdown_sections}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(markdown_sections)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        markdown_sections
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Structured Example 2: XML Structure
     print("--- Example 2: XML Structure ---")
     xml_structure = """<system>
@@ -88,12 +90,14 @@ Write API documentation for a user authentication endpoint.
 5. Code Examples
 6. Authentication Flow
 </output>"""
-    
+
     print(f"\nPrompt:\n{xml_structure}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(xml_structure)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        xml_structure
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Structured Example 3: Hybrid Markdown/XML
     print("--- Example 3: Hybrid Structure (Markdown + XML) ---")
     hybrid_structure = """## SYSTEM
@@ -122,9 +126,11 @@ Records: 50,000 transactions
 ### 4. Visualizations (describe)
 ### 5. Recommendations
 ### 6. Next Steps"""
-    
+
     print(f"\nPrompt:\n{hybrid_structure}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(hybrid_structure)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        hybrid_structure
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
 
@@ -133,7 +139,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
-        traceback.print_exc()
 
+        traceback.print_exc()

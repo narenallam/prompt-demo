@@ -17,10 +17,10 @@ def print_section(title: str):
 def main():
     """Run universal template demo."""
     print_section("Demo: Universal Prompt Template (Cross-Model Compatible)")
-    
+
     llm = get_llm()
     print_provider_info_for_llm(llm)
-    
+
     # Universal Template Example 1: Technical Explanation
     print("--- Example 1: Technical Explanation ---")
     universal_prompt_1 = """# ROLE
@@ -44,12 +44,14 @@ This explanation is for computer science students learning data structures.
 ## Examples
 ## Diagram (text-based)
 ## Final Answer"""
-    
+
     print(f"\nPrompt:\n{universal_prompt_1}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(universal_prompt_1)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        universal_prompt_1
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Universal Template Example 2: Creative Task
     print("--- Example 2: Creative Task ---")
     universal_prompt_2 = """# ROLE
@@ -71,12 +73,14 @@ The story should be suitable for children aged 8-12.
 ## Story Title
 ## Story Content
 ## Moral/Lesson"""
-    
+
     print(f"\nPrompt:\n{universal_prompt_2}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(universal_prompt_2)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        universal_prompt_2
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Universal Template Example 3: Problem Solving
     print("--- Example 3: Problem Solving ---")
     universal_prompt_3 = """# ROLE
@@ -101,9 +105,11 @@ The company is an e-commerce platform selling consumer electronics.
 ## Analysis
 ## Recommendations
 ## Next Steps"""
-    
+
     print(f"\nPrompt:\n{universal_prompt_3}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(universal_prompt_3)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        universal_prompt_3
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
 
@@ -112,7 +118,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
-        traceback.print_exc()
 
+        traceback.print_exc()

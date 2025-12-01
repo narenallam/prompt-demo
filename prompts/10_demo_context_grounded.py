@@ -17,10 +17,10 @@ def print_section(title: str):
 def main():
     """Run context-grounded prompts demo."""
     print_section("Demo: Context-Grounded Prompts")
-    
+
     llm = get_llm()
     print_provider_info_for_llm(llm)
-    
+
     # Context Example 1: Technical Context
     print("--- Example 1: Technical Context ---")
     technical_context = """## SYSTEM
@@ -55,12 +55,14 @@ def get_user(user_id: int):
 2. Suggested Improvements
 3. Refactored Code
 4. Best Practices Applied"""
-    
+
     print(f"\nPrompt:\n{technical_context}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(technical_context)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        technical_context
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Context Example 2: Business Context
     print("--- Example 2: Business Context ---")
     business_context = """## SYSTEM
@@ -87,12 +89,14 @@ Analyze potential causes and recommend strategies to reduce churn.
 3. Recommended Strategies
 4. Implementation Priority
 5. Success Metrics"""
-    
+
     print(f"\nPrompt:\n{business_context}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(business_context)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        business_context
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Context Example 3: Educational Context
     print("--- Example 3: Educational Context ---")
     educational_context = """## SYSTEM
@@ -122,9 +126,11 @@ Explain merge sort algorithm in a way that builds on their existing knowledge.
 4. Time Complexity Analysis
 5. Comparison with Previous Algorithms
 6. Practice Exercise"""
-    
+
     print(f"\nPrompt:\n{educational_context}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(educational_context)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        educational_context
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
 
@@ -133,7 +139,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
-        traceback.print_exc()
 
+        traceback.print_exc()

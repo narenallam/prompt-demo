@@ -20,10 +20,10 @@ def print_section(title: str):
 def main():
     """Run model-specific templates demo."""
     print_section("Demo: Model-Specific Prompt Templates")
-    
+
     llm = get_llm()
     print_provider_info_for_llm(llm)
-    
+
     # Template 1: Markdown Format (Optimal for ChatGPT/Gemini)
     print("--- Template 1: Markdown Format (ChatGPT/Gemini Style) ---")
     markdown_prompt = """## SYSTEM
@@ -44,12 +44,14 @@ Explain Python decorators with examples.
 3. Code Examples
 4. Use Cases
 5. Final Answer"""
-    
+
     print(f"\nPrompt:\n{markdown_prompt}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(markdown_prompt)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        markdown_prompt
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Template 2: XML Format (Optimal for Claude, but works with others)
     print("--- Template 2: XML Format (Claude Style) ---")
     xml_prompt = """<system>You are an expert data scientist.</system>
@@ -68,12 +70,12 @@ Explain Python decorators with examples.
 4. Comparison Table
 5. Final Answer
 </output>"""
-    
+
     print(f"\nPrompt:\n{xml_prompt}")
     response, response_obj, start_time, end_time = llm.invoke_with_metadata(xml_prompt)
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Template 3: Gemini-Specific Format
     print("--- Template 3: Gemini-Specific Format ---")
     gemini_prompt = """# Instruction
@@ -96,12 +98,14 @@ The API should support CRUD operations and user authentication.
 - Request Examples
 - Response Examples
 - Final Design"""
-    
+
     print(f"\nPrompt:\n{gemini_prompt}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(gemini_prompt)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        gemini_prompt
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
-    
+
     # Template 4: DeepSeek-Style (Step-by-step reasoning)
     print("--- Template 4: DeepSeek-Style (Step-by-Step Reasoning) ---")
     deepseek_prompt = """## SYSTEM
@@ -125,9 +129,11 @@ This is a word problem for elementary students.
 2. Reasoning Steps
 3. Calculation
 4. Final Answer"""
-    
+
     print(f"\nPrompt:\n{deepseek_prompt}")
-    response, response_obj, start_time, end_time = llm.invoke_with_metadata(deepseek_prompt)
+    response, response_obj, start_time, end_time = llm.invoke_with_metadata(
+        deepseek_prompt
+    )
     print_token_usage(response_obj, start_time, end_time)
     print(f"Response:\n{response}\n")
 
@@ -136,7 +142,7 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
-        traceback.print_exc()
 
+        traceback.print_exc()

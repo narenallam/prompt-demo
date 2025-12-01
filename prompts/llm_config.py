@@ -18,6 +18,7 @@ load_dotenv(".env")
 
 class OllamaConfig(BaseModel):
     """Configuration for Ollama provider."""
+
     model: str = "deepseek-r1-32b:latest"
     base_url: str = "http://localhost:11434"
     temperature: float = 0.7
@@ -27,6 +28,7 @@ class OllamaConfig(BaseModel):
 
 class OpenAIConfig(BaseModel):
     """Configuration for OpenAI provider."""
+
     model: str = "gpt-3.5-turbo"  # More widely available model
     api_key: Optional[str] = None
     base_url: Optional[str] = None
@@ -37,6 +39,7 @@ class OpenAIConfig(BaseModel):
 
 class GeminiConfig(BaseModel):
     """Configuration for Gemini provider."""
+
     model: str = "gemini-pro"
     api_key: Optional[str] = None
     temperature: float = 0.7
@@ -46,6 +49,7 @@ class GeminiConfig(BaseModel):
 
 class LLMConfig(BaseSettings):
     """Main LLM configuration."""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -55,17 +59,16 @@ class LLMConfig(BaseSettings):
 
     # Provider selection
     provider: Literal["ollama", "openai", "gemini"] = Field(
-        default="ollama",
-        description="LLM provider to use"
+        default="ollama", description="LLM provider to use"
     )
- 
+
     # Ollama configuration
     ollama_model: str = Field(default="deepseek-r1-32b:latest")
     ollama_base_url: str = Field(default="http://localhost:11434")
     ollama_temperature: float = Field(default=0.7)
     ollama_top_p: float = Field(default=0.9)
     ollama_num_predict: Optional[int] = Field(default=None)
-    
+
     # OpenAI configuration
     openai_model: str = Field(default="gpt-3.5-turbo")  # More widely available
     openai_api_key: Optional[str] = Field(default=None)
@@ -73,14 +76,14 @@ class LLMConfig(BaseSettings):
     openai_temperature: float = Field(default=0.7)
     openai_top_p: float = Field(default=1.0)
     openai_max_tokens: Optional[int] = Field(default=None)
-    
+
     # Gemini configuration
     gemini_model: str = Field(default="gemini-2.5-flash")
     gemini_api_key: Optional[str] = Field(default=None)
     gemini_temperature: float = Field(default=0.7)
     gemini_top_p: float = Field(default=0.95)
     gemini_max_output_tokens: Optional[int] = Field(default=None)
-    
+
     def get_ollama_config(self) -> OllamaConfig:
         """Get Ollama configuration."""
         return OllamaConfig(
@@ -90,16 +93,16 @@ class LLMConfig(BaseSettings):
             top_p=self.ollama_top_p,
             num_predict=self.ollama_num_predict,
         )
-    
+
     def get_openai_config(self) -> OpenAIConfig:
         """Get OpenAI configuration."""
         # Try to get API key from config, then env var
         # load_dotenv() was called at module level, so os.getenv should work
         api_key = self.openai_api_key or os.getenv("OPENAI_API_KEY")
-        
+
         # If still None, ChatOpenAI will try to get it from env itself
         # but we'll let it handle the error if it's truly missing
-        
+
         return OpenAIConfig(
             model=self.openai_model,
             api_key=api_key,
@@ -108,16 +111,16 @@ class LLMConfig(BaseSettings):
             top_p=self.openai_top_p,
             max_tokens=self.openai_max_tokens,
         )
-    
+
     def get_gemini_config(self) -> GeminiConfig:
         """Get Gemini configuration."""
         # Try to get API key from config, then env var
         # load_dotenv() was called at module level, so os.getenv should work
         api_key = self.gemini_api_key or os.getenv("GOOGLE_API_KEY")
-        
+
         # If still None, ChatGoogleGenerativeAI will try to get it from env itself
         # but we'll let it handle the error if it's truly missing
-        
+
         return GeminiConfig(
             model=self.gemini_model,
             api_key=api_key,
@@ -125,11 +128,11 @@ class LLMConfig(BaseSettings):
             top_p=self.gemini_top_p,
             max_output_tokens=self.gemini_max_output_tokens,
         )
-    
+
     def create_provider(self) -> LLMProvider:
         """
         Create an LLM provider based on the current configuration.
-        
+
         Returns:
             LLMProvider instance
         """
@@ -142,7 +145,7 @@ class LLMConfig(BaseSettings):
                 top_p=config.top_p,
                 num_predict=config.num_predict,
             )
-        
+
         elif self.provider == "openai":
             config = self.get_openai_config()
             return OpenAIProvider(
@@ -153,7 +156,7 @@ class LLMConfig(BaseSettings):
                 top_p=config.top_p,
                 max_tokens=config.max_tokens,
             )
-        
+
         elif self.provider == "gemini":
             config = self.get_gemini_config()
             return GeminiProvider(
@@ -163,7 +166,7 @@ class LLMConfig(BaseSettings):
                 top_p=config.top_p,
                 max_output_tokens=config.max_output_tokens,
             )
-        
+
         else:
             raise ValueError(f"Unknown provider: {self.provider}")
 
@@ -183,10 +186,9 @@ def get_config() -> LLMConfig:
 def get_llm() -> LLMProvider:
     """
     Get an LLM provider instance based on the current configuration.
-    
+
     Returns:
         LLMProvider instance
     """
     config = get_config()
     return config.create_provider()
-

@@ -4,6 +4,7 @@ Demonstrates the three major reasoning patterns with single prompt examples.
 """
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from langchain_core.prompts import ChatPromptTemplate
@@ -17,14 +18,15 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 # Sequential step-by-step reasoning in a linear path
 # ============================================================================
 
+
 def chain_of_thought_example():
     """
     Chain of Thought: Step-by-step reasoning through a problem
     """
-    print("="*80)
+    print("=" * 80)
     print("PATTERN 1: CHAIN OF THOUGHT (CoT)")
-    print("="*80)
-    
+    print("=" * 80)
+
     cot_prompt = ChatPromptTemplate.from_template(
         """Solve this problem using step-by-step reasoning. Show your work clearly.
 
@@ -39,14 +41,14 @@ Instructions:
 Solution:
 """
     )
-    
+
     cot_chain = cot_prompt | llm | StrOutputParser()
-    
+
     question = "If a store sells apples at $3 per kg and oranges at $4 per kg, and I buy 2.5 kg of apples and 1.5 kg of oranges with a 10% discount on the total, how much do I pay?"
-    
-    print(f"\n📝 Question: {question}\n")
-    print("🔗 Chain of Thought Reasoning:\n")
-    
+
+    print(f"\n Question: {question}\n")
+    print(" Chain of Thought Reasoning:\n")
+
     result = cot_chain.invoke({"question": question})
     print(result)
     print()
@@ -57,14 +59,15 @@ Solution:
 # Explore multiple reasoning paths and compare them
 # ============================================================================
 
+
 def tree_of_thought_example():
     """
     Tree of Thought: Explore multiple reasoning branches simultaneously
     """
-    print("="*80)
+    print("=" * 80)
     print("PATTERN 2: TREE OF THOUGHT (ToT)")
-    print("="*80)
-    
+    print("=" * 80)
+
     tot_prompt = ChatPromptTemplate.from_template(
         """Solve this problem by exploring MULTIPLE different reasoning paths, then compare them.
 
@@ -80,14 +83,16 @@ Instructions:
 Solution:
 """
     )
-    
+
     tot_chain = tot_prompt | llm | StrOutputParser()
-    
-    question = "Should a startup prioritize growth or profitability in its first 2 years?"
-    
-    print(f"\n📝 Question: {question}\n")
-    print("🌳 Tree of Thought - Multiple Paths:\n")
-    
+
+    question = (
+        "Should a startup prioritize growth or profitability in its first 2 years?"
+    )
+
+    print(f"\n Question: {question}\n")
+    print(" Tree of Thought - Multiple Paths:\n")
+
     result = tot_chain.invoke({"question": question})
     print(result)
     print()
@@ -98,14 +103,15 @@ Solution:
 # Build interconnected reasoning with dependencies between concepts
 # ============================================================================
 
+
 def graph_of_thought_example():
     """
     Graph of Thought: Interconnected reasoning with dependencies
     """
-    print("="*80)
+    print("=" * 80)
     print("PATTERN 3: GRAPH OF THOUGHT (GoT)")
-    print("="*80)
-    
+    print("=" * 80)
+
     got_prompt = ChatPromptTemplate.from_template(
         """Solve this problem by building a graph of interconnected reasoning nodes.
 
@@ -128,14 +134,14 @@ Final Synthesis: [integrate all nodes]
 Solution:
 """
     )
-    
+
     got_chain = got_prompt | llm | StrOutputParser()
-    
+
     question = "How can a city reduce traffic congestion while improving air quality and maintaining economic activity?"
-    
-    print(f"\n📝 Question: {question}\n")
-    print("🕸️  Graph of Thought - Interconnected Reasoning:\n")
-    
+
+    print(f"\n Question: {question}\n")
+    print("  Graph of Thought - Interconnected Reasoning:\n")
+
     result = got_chain.invoke({"question": question})
     print(result)
     print()
@@ -146,16 +152,17 @@ Solution:
 # Show all three patterns on the same problem
 # ============================================================================
 
+
 def comparison_example():
     """
     Compare all three patterns on the same problem
     """
-    print("="*80)
+    print("=" * 80)
     print("BONUS: COMPARING CoT, ToT, and GoT ON THE SAME PROBLEM")
-    print("="*80)
-    
+    print("=" * 80)
+
     problem = "What's the best way to learn a new programming language?"
-    
+
     # CoT prompt
     cot_prompt = ChatPromptTemplate.from_template(
         """Using Chain of Thought (step-by-step reasoning), answer: {question}
@@ -163,7 +170,7 @@ def comparison_example():
 Provide a clear, sequential reasoning process.
 """
     )
-    
+
     # ToT prompt
     tot_prompt = ChatPromptTemplate.from_template(
         """Using Tree of Thought (multiple paths), answer: {question}
@@ -171,7 +178,7 @@ Provide a clear, sequential reasoning process.
 Generate 3 different approaches and compare them.
 """
     )
-    
+
     # GoT prompt
     got_prompt = ChatPromptTemplate.from_template(
         """Using Graph of Thought (interconnected nodes), answer: {question}
@@ -179,9 +186,9 @@ Generate 3 different approaches and compare them.
 Identify key sub-questions, their dependencies, and synthesize them.
 """
     )
-    
-    print(f"\n📝 Problem: {problem}\n")
-    
+
+    print(f"\n Problem: {problem}\n")
+
     # Execute CoT
     print("-" * 80)
     print("CHAIN OF THOUGHT APPROACH:")
@@ -189,7 +196,7 @@ Identify key sub-questions, their dependencies, and synthesize them.
     cot_result = (cot_prompt | llm | StrOutputParser()).invoke({"question": problem})
     print(cot_result)
     print()
-    
+
     # Execute ToT
     print("-" * 80)
     print("TREE OF THOUGHT APPROACH:")
@@ -197,7 +204,7 @@ Identify key sub-questions, their dependencies, and synthesize them.
     tot_result = (tot_prompt | llm | StrOutputParser()).invoke({"question": problem})
     print(tot_result)
     print()
-    
+
     # Execute GoT
     print("-" * 80)
     print("GRAPH OF THOUGHT APPROACH:")
@@ -212,23 +219,23 @@ Identify key sub-questions, their dependencies, and synthesize them.
 # ============================================================================
 
 if __name__ == "__main__":
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("SIMPLE ONE-SHOT EXAMPLES: CoT, ToT, and GoT")
-    print("="*80 + "\n")
-    
+    print("=" * 80 + "\n")
+
     # Run individual examples
     chain_of_thought_example()
     print("\n")
-    
+
     tree_of_thought_example()
     print("\n")
-    
+
     graph_of_thought_example()
     print("\n")
-    
+
     # Run comparison
     # comparison_example()
-    
-    print("="*80)
+
+    print("=" * 80)
     print("ALL EXAMPLES COMPLETED")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")

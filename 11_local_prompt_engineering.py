@@ -5,11 +5,11 @@ Uses Ollama with llama3.1:8b model running locally.
 """
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_ollama import ChatOllama
 
 model = ChatOllama(model="llama3.1:8b")
@@ -105,18 +105,21 @@ parser = StrOutputParser()
 
 # You can also prompt it to *generate* the steps:
 prompt_cot_generate = ChatPromptTemplate.from_template(
-    "Q: {question}\n"
-    "A: Let's think step by step."
+    "Q: {question}\nA: Let's think step by step."
 )
 
 cot_chain = prompt_cot_generate | model | parser
 # result = cot_chain.invoke({"question": "A store has 20 apples. They sell 8 in the morning and 5 in the afternoon. How many are left?"})
-result = cot_chain.invoke({"question": '''Mr Rao, usually picks his son from the school
+result = cot_chain.invoke(
+    {
+        "question": """Mr Rao, usually picks his son from the school
  everyday evening. One day school closed earlier, his son did not wait at the schol,
  instead he walks towards home. Mr Rao started to pick his son in usual time, 
  but found his son on the way to home, and returned back with him, 
  on that day he arrived the home 15 mins earlier. What is the distance 
- between his school and the home?. Think step-by-step and come to the answer'''})
+ between his school and the home?. Think step-by-step and come to the answer"""
+    }
+)
 print(f"CoT Answer:\n{result}")
 
 # # Example 5: Structural Prompting (XML Tags)
@@ -135,4 +138,3 @@ print(f"CoT Answer:\n{result}")
 # xml_chain = prompt_xml | model | parser
 # result = xml_chain.invoke({"text_input": "LangChain 1.0 introduces LCEL for composable AI pipelines. It supports streaming, async, and automatic retries."})
 # print(f"XML Structured Output:\n{result}")
-

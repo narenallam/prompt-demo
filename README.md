@@ -1,310 +1,605 @@
-# Prompt Engineering & LangChain Demos
+# LangChain & Prompt Engineering Demonstrations
 
-A comprehensive demonstration framework covering:
-- **Prompt Engineering**: Advanced prompting techniques and parameter tuning
-- **LangChain**: Complete LangChain 1.0 examples with LCEL, RAG, Agents, and more
+A comprehensive collection of examples demonstrating LangChain 1.0+ patterns, prompt engineering techniques, and AI application development with multiple LLM providers.
 
-Supports multiple LLM providers (Ollama, OpenAI, Gemini) via a unified interface.
+## Table of Contents
 
-## Features
+- [Overview](#overview)
+- [Setup](#setup)
+- [LangChain Examples](#langchain-examples)
+- [Prompt Engineering Examples](#prompt-engineering-examples)
+- [Testing Tools](#testing-tools)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Best Practices](#best-practices)
 
-- **Abstract LLM Interface**: Switch between providers seamlessly
-- **Multiple Providers**: Support for Ollama, OpenAI, and Google Gemini
-- **Modular Demos**: Each prompt technique in a separate file
-- **Easy Configuration**: Simple config file or environment variables
-- **Comprehensive Prompting Techniques**: Covers all major prompting strategies from 2025 best practices
-- **Token Usage & Timing**: All demos display token usage and timing information
-- **Student-Friendly**: Designed for teaching LLM behavior, parameter tuning, and prompt engineering
+## Overview
 
-## Installation
+This repository contains production-ready examples of:
 
+- **LangChain 1.0+ Patterns**: LCEL, Runnables, Agents, Memory, RAG
+- **LangGraph Workflows**: Stateful multi-agent applications
+- **Prompt Engineering**: Techniques for optimal LLM responses
+- **Multi-Provider Support**: Ollama, OpenAI, Google Gemini
+- **Advanced Techniques**: Chain-of-Thought, Tree-of-Thought, Self-Reflection
+
+### Key Features
+
+- LangChain 1.0+ compatible (uses modern Runnable interface)
+- Type-safe with proper annotations
+- PEP 8 compliant code
+- Comprehensive inline documentation
+- Real-world use cases and examples
+- No deprecated patterns
+
+## Setup
+
+### Prerequisites
+
+- Python 3.11+
+- UV package manager (recommended) or pip
+
+### Installation
+
+1. Clone the repository:
 ```bash
-# Install dependencies
+git clone <repository-url>
+cd prompt-demo
+```
+
+2. Install dependencies using UV:
+```bash
 uv sync
 ```
 
-## Configuration
-
-### Option 1: Environment Variables (Recommended)
-
-Create a `.env` file from the example:
-
+Or using pip:
 ```bash
-# Copy the example file
+pip install -e .
+```
+
+3. Configure environment variables:
+```bash
 cp env.example .env
-
-# Edit .env and add your API keys and model preferences
+# Edit .env and add your API keys
 ```
 
-**Example `.env` file:**
+### API Keys
+
+Add your API keys to `.env`:
 
 ```bash
-# Set your provider
-PROVIDER=openai  # or "ollama" or "gemini"
+# Google Gemini (recommended for examples)
+GOOGLE_API_KEY=your-google-api-key-here
 
-# OpenAI Configuration
-OPENAI_API_KEY=sk-your-key-here
-OPENAI_MODEL=gpt-3.5-turbo  # Options: gpt-3.5-turbo, gpt-4, gpt-4o-mini, gpt-4-turbo
-
-# Ollama Configuration (if using Ollama)
-OLLAMA_MODEL=deepseek-r1-32b:latest
+# Optional: Other providers
+OPENAI_API_KEY=your-openai-api-key-here
 OLLAMA_BASE_URL=http://localhost:11434
-
-# Gemini Configuration (if using Gemini)
-GOOGLE_API_KEY=your-google-api-key
-GEMINI_MODEL=gemini-pro
 ```
 
-**Important:** Both `PROVIDER` and model names (e.g., `OPENAI_MODEL`, `GEMINI_MODEL`, `OLLAMA_MODEL`) are automatically read from your `.env` file. All demos will use the provider and model specified in your `.env` file.
+Get API keys:
+- Google Gemini: https://aistudio.google.com/app/apikey
+- OpenAI: https://platform.openai.com/api-keys
 
-### Option 2: Python Configuration (Override .env)
+## LangChain Examples
 
-You can also override `.env` settings programmatically:
+### Core Examples (Numbered 0-10)
 
+#### 0. Sample LangChain (`0_sample_langchain.py`)
+Basic LangChain introduction and setup.
+
+#### 1. Hello LCEL (`1_langchain_hello_lcel.py`)
+Introduction to LangChain Expression Language (LCEL).
+- Basic chain creation with | operator
+- Simple prompt templates
+- Output parsing
+
+#### 2. Prompt Engineering (`2_langchain_prompt_engineering.py`)
+Prompt engineering techniques with LangChain.
+- Template design
+- Few-shot learning
+- System messages
+
+#### 3. Self-Reflection (`3_langchain_self_reflection.py`)
+Self-reflection patterns for improved responses.
+- Critique and refine pattern
+- Iterative improvement
+
+#### 4. Chain-of-Thought, Tree-of-Thought (`4_cot_tot_got.py`)
+Advanced reasoning techniques.
+- Chain-of-Thought (CoT): Step-by-step reasoning
+- Tree-of-Thought (ToT): Multiple reasoning paths
+- Graph-of-Thought (GoT): Connected reasoning
+
+#### 5. LangChain ToT/GoT (`5_langchain_tot_got.py`)
+LangChain implementation of advanced reasoning.
+- Structured reasoning with LangChain
+- Multi-path exploration
+
+#### 6. Runnables & LCEL (`6_langchain_runnables_lcel.py`)
+Deep dive into the Runnable interface.
+- Chain composition
+- Parallel execution
+- Custom runnables
+
+#### 7. RAG - Retrieval-Augmented Generation (`7_langchain_rag_basic.py`)
+Complete RAG pipeline implementation.
+
+**What is RAG?**
+- Retrieval: Find relevant information from knowledge base
+- Augmentation: Add retrieved context to the query
+- Generation: LLM generates answer based on context
+
+**Benefits:**
+- Reduces hallucinations
+- Enables access to current/domain-specific data
+- More cost-effective than fine-tuning
+
+**Example Use Case:**
+Uses an unpublished movie screenplay ("The Last Cipher" by Director Sofia Ramirez) to demonstrate how RAG allows the LLM to answer questions about content it was never trained on.
+
+**Components:**
+- Vector store for semantic search
+- Embedding model (Gemini embedding-001)
+- LCEL chain for retrieval + generation
+
+#### 8. Memory Systems (`8_langchain_memory.py`)
+Conversation memory patterns (LangChain 1.0+).
+
+**Memory Strategies:**
+1. **Simple In-Memory History**: Stores all messages
+   - Use case: Short conversations, customer support
+   
+2. **Windowed Memory**: Keeps only last N messages
+   - Use case: Long conversations, token limit management
+
+**Key Pattern:**
 ```python
-from llm_config import LLMConfig, get_llm
-
-# Create custom config (overrides .env)
-from llm_config import get_config
-base_config = get_config()  # Get current .env config
-
-config = LLMConfig(
-    provider="openai",
-    openai_model=base_config.openai_model,  # Use model from .env
-    openai_api_key="your-key"  # Override API key from .env
+RunnableWithMessageHistory(
+    chain,
+    get_session_history,
+    input_messages_key="input",
+    history_messages_key="history"
 )
-
-# Get LLM instance
-llm = config.create_provider()
 ```
 
-**Note:** Settings in `.env` file are loaded automatically. Python config overrides them if specified.
+**Deprecated Patterns (Don't Use):**
+- ConversationBufferMemory
+- ConversationSummaryMemory
+- All langchain.memory.* classes
 
-## Usage
+#### 9. Agents & Tools (`9_langchain_agents_tools.py`)
+Modern agent patterns with tool calling.
 
-### Run Individual Demos
+**What are Agents?**
+Agents use LLMs to:
+1. Reason about which tools to use
+2. Act by calling tools
+3. Observe the results
+4. Repeat until task complete
 
-#### Teaching Order (Recommended Sequence)
+**Tools Demonstrated:**
+- Calculator: Mathematical expressions
+- Knowledge base search: Information retrieval
+- Weather API: Simulated external data
 
+**Pattern:**
+- Uses @tool decorator (LangChain 1.0+ standard)
+- .bind_tools() for tool binding
+- Native LLM tool calling (Gemini, GPT-4, Claude)
+
+#### 10. LangGraph - Stateful Workflows (`10_langchain_langgraph.py`)
+Advanced graph-based orchestration.
+
+**What is LangGraph?**
+Library for building stateful, multi-actor applications with LLMs.
+
+**Examples:**
+1. **Simple Chatbot with Memory**
+   - Uses StateGraph and MemorySaver
+   - Persistent conversation state
+   
+2. **Research Agent with Tools**
+   - Conditional routing
+   - Tool execution with ToolNode
+   
+3. **Content Creation Workflow**
+   - Multi-step pipeline: Outline -> Draft -> Review -> Finalize
+   - Complex state management
+
+**When to Use:**
+- Multi-step workflows with state
+- Cyclic processes (loops, retries)
+- Human-in-the-loop workflows
+- Multi-agent collaboration
+
+## Prompt Engineering Examples
+
+Located in `prompts/` directory:
+
+### Prompt Techniques (`prompts/`)
+
+1. **Basic Invoke** (`1_demo_basic_invoke.py`)
+   - Simple LLM invocation
+   - Basic prompt patterns
+
+2. **Parameter Tuning** (`2_demo_parameter_tuning.py`)
+   - Temperature, top_p, max_tokens
+   - Impact on output quality
+
+3. **Advanced Parameters** (`3_demo_advanced_parameters.py`)
+   - Frequency penalty, presence penalty
+   - Top-k sampling
+
+4. **Prompt Techniques** (`4_demo_prompt_techniques.py`)
+   - Few-shot learning
+   - Chain-of-Thought
+   - Role prompting
+
+5. **Prompt Iteration** (`5_demo_prompt_iteration.py`)
+   - Iterative refinement
+   - A/B testing prompts
+
+6. **Structured Prompts** (`6_demo_structured_prompts.py`)
+   - JSON output
+   - Pydantic models
+
+7. **Model-Specific Templates** (`7_demo_model_specific_templates.py`)
+   - Optimized prompts per model
+   - Provider-specific patterns
+
+8. **Universal Template** (`8_demo_universal_template.py`)
+   - Cross-model compatibility
+   - Provider-agnostic patterns
+
+9. **Format-Constrained** (`9_demo_format_constrained.py`)
+   - Output formatting
+   - Structured responses
+
+10. **Context-Grounded** (`10_demo_context_grounded.py`)
+    - Grounding responses in context
+    - Reducing hallucinations
+
+11. **Structured Sections** (`11_demo_structured_sections.py`)
+    - Multi-section outputs
+    - Complex formatting
+
+12. **Streaming** (`12_demo_streaming.py`)
+    - Real-time response streaming
+    - Token-by-token output
+
+### Supporting Modules
+
+- **llm_config.py**: Multi-provider configuration system
+- **llm_providers.py**: Provider implementations (Ollama, OpenAI, Gemini)
+- **llm_interface.py**: Unified interface for all providers
+- **demo_utils.py**: Utility functions for demos
+
+## Testing Tools
+
+### Test Gemini API Key
+
+#### `test_gemini_key.py` - Pure Python (No Dependencies)
+Tests Gemini API key using only Python standard library.
+
+**Features:**
+- API key validation
+- Lists all available models (9 total: 7 generative, 2 embedding)
+- Shows exact token usage per request
+- Quota monitoring information
+- No external dependencies (uses urllib)
+
+**Run:**
 ```bash
-# 1. Start with basic invocation
-python 1_demo_basic_invoke.py
-
-# 2. Understand parameter tuning (temperature, top_p, max_tokens)
-python 2_demo_parameter_tuning.py
-
-# 3. Advanced parameter combinations
-python 3_demo_advanced_parameters.py
-
-# 4. Basic prompt techniques (zero-shot, few-shot, chain-of-thought, role-based)
-python 4_demo_prompt_techniques.py
-
-# 5. Prompt iteration and refinement
-python 5_demo_prompt_iteration.py
-
-# 6. Structured prompts with LangChain templates
-python 6_demo_structured_prompts.py
-
-# 7. Model-specific templates (Markdown for ChatGPT/Gemini, XML for Claude)
-python 7_demo_model_specific_templates.py
-
-# 8. Universal cross-model compatible template
-python 8_demo_universal_template.py
-
-# 9. Format-constrained outputs (tables, code blocks, JSON, structured lists)
-python 9_demo_format_constrained.py
-
-# 10. Context-grounded prompts (rich context for better responses)
-python 10_demo_context_grounded.py
-
-# 11. Structured section prompts (Markdown sections, XML structure)
-python 11_demo_structured_sections.py
-
-# 12. Streaming responses (real-time token streaming)
-python 12_demo_streaming.py
+python3 test_gemini_key.py
 ```
 
-### Run All Demos
+#### `test_gemini_langchain.py` - LangChain Integration
+Tests Gemini API with LangChain patterns.
 
+**Features:**
+- API key validation with LangChain
+- Tests multiple models
+- Streaming demonstration
+- Token counting capabilities
+- Production-ready patterns
+
+**Run:**
 ```bash
-# Run all prompt engineering demos
-python run_all_demos.py
-
-# Run all LangChain examples (in teaching order)
-for file in [0-9]_langchain_*.py; do
-    echo "Running $file..."
-    uv run python "$file"
-    echo ""
-done
+uv run test_gemini_langchain.py
 ```
 
-### LangChain Examples (Separate Series)
+### Available Gemini Models
 
-A complete set of LangChain examples based on the 2025 AI Engineering curriculum:
+**Generative Models:**
+- gemini-2.5-flash: 1M input / 65K output tokens (recommended)
+- gemini-2.5-pro: 1M input / 65K output tokens (most capable)
+- gemini-2.0-flash: 1M input / 8K output tokens
+- gemini-2.0-flash-lite: 1M input / 8K output tokens
+- gemini-2.5-flash-lite: 1M input / 65K output tokens
 
-```bash
-# 1. Hello LangChain 1.0 (LCEL basics)
-uv run python 1_langchain_hello_lcel.py
+**Embedding Models:**
+- text-embedding-004
+- embedding-001
 
-# 2. Core Prompt Engineering Techniques
-uv run python 2_langchain_prompt_engineering.py
+### Quota Information
 
-# 3. Self-Reflection Pattern
-uv run python 3_langchain_self_reflection.py
+**Free Tier Limits:**
+- 15 requests per minute (RPM)
+- 1,000,000 tokens per minute (TPM)
+- 1,500 requests per day (RPD)
 
-# 4. Advanced LCEL Patterns (branching, streaming, retries)
-uv run python 4_langchain_runnables_lcel.py
-
-# 5. Basic RAG Pipeline
-uv run python 5_langchain_rag_basic.py
-
-# 6. Memory Systems
-uv run python 6_langchain_memory.py
-
-# 7. Agents and Tool Calling
-uv run python 7_langchain_agents_tools.py
-
-# 8. LangGraph Concepts (stateful, cyclic applications)
-uv run python 8_langchain_langgraph.py
-```
-
-See `LANGCHAIN_EXAMPLES_README.md` for detailed documentation of each LangChain example.
-
-## Using the LLM Interface in Your Code
-
-```python
-from llm_config import get_llm
-
-# Get configured LLM provider
-llm = get_llm()
-
-# Simple invoke
-response = llm.invoke("Explain quantum computing")
-
-# Streaming
-for chunk in llm.stream("Tell me a story"):
-    print(chunk, end="")
-
-# Batch processing
-responses = llm.batch([
-    "What is Python?",
-    "What is JavaScript?",
-    "What is Rust?"
-])
-
-# Update parameters
-creative_llm = llm.update_parameters(
-    temperature=1.2,
-    top_p=0.95,
-    max_tokens=500
-)
-response = creative_llm.invoke("Write a poem")
-```
-
-## Provider Setup
-
-### Ollama
-
-1. Install Ollama: https://ollama.ai
-2. Pull the model:
-   ```bash
-   ollama pull deepseek-r1-32b:latest
-   ```
-3. Start Ollama server:
-   ```bash
-   ollama serve
-   ```
-
-### OpenAI
-
-1. Get API key from https://platform.openai.com
-2. Set in `.env`:
-   ```bash
-   PROVIDER=openai
-   OPENAI_API_KEY=sk-...
-   ```
-
-### Gemini
-
-1. Get API key from https://makersuite.google.com/app/apikey
-2. Set in `.env`:
-   ```bash
-   PROVIDER=gemini
-   GOOGLE_API_KEY=...
-   ```
+**Monitor Usage:**
+- Google AI Studio: https://aistudio.google.com/app/apikey
+- Cloud Console: https://console.cloud.google.com/apis/api/generativelanguage.googleapis.com/quotas
 
 ## Project Structure
 
 ```
-.
-├── llm_interface.py          # Abstract base class
-├── llm_providers.py          # Provider implementations
-├── llm_config.py             # Configuration system
-├── demo_utils.py             # Utility functions for demos
-├── 1_demo_basic_invoke.py      # Basic LLM invoke
-├── 2_demo_parameter_tuning.py  # Parameter tuning examples
-├── 3_demo_advanced_parameters.py # Advanced parameter combinations
-├── 4_demo_prompt_techniques.py # Basic prompt techniques (zero-shot, few-shot, CoT, role-based)
-├── 5_demo_prompt_iteration.py  # Prompt refinement and iteration
-├── 6_demo_structured_prompts.py # LangChain templates
-├── 7_demo_model_specific_templates.py # Model-specific templates (Markdown/XML)
-├── 8_demo_universal_template.py # Universal cross-model template
-├── 9_demo_format_constrained.py # Format-constrained outputs (tables, code, JSON)
-├── 10_demo_context_grounded.py  # Context-grounded prompts
-├── 11_demo_structured_sections.py # Structured section prompts
-├── 12_demo_streaming.py         # Streaming responses
-├── run_all_demos.py          # Run all prompt engineering demos
-│
-├── 1_langchain_hello_lcel.py      # Hello LangChain 1.0 (LCEL)
-├── 2_langchain_prompt_engineering.py # Core prompt engineering
-├── 3_langchain_self_reflection.py  # Self-reflection pattern
-├── 4_langchain_runnables_lcel.py   # Advanced LCEL patterns
-├── 5_langchain_rag_basic.py        # Basic RAG pipeline
-├── 6_langchain_memory.py           # Memory systems
-├── 7_langchain_agents_tools.py     # Agents and tool calling
-├── 8_langchain_langgraph.py        # LangGraph concepts
-└── LANGCHAIN_EXAMPLES_README.md    # LangChain examples documentation
+prompt-demo/
+├── 0_sample_langchain.py          # Basic LangChain intro
+├── 1_langchain_hello_lcel.py      # LCEL introduction
+├── 2_langchain_prompt_engineering.py  # Prompt patterns
+├── 3_langchain_self_reflection.py # Self-reflection
+├── 4_cot_tot_got.py               # Advanced reasoning
+├── 5_langchain_tot_got.py         # LangChain reasoning
+├── 6_langchain_runnables_lcel.py  # Runnables deep dive
+├── 7_langchain_rag_basic.py       # RAG pipeline
+├── 8_langchain_memory.py          # Memory systems
+├── 9_langchain_agents_tools.py    # Agents & tools
+├── 10_langchain_langgraph.py      # LangGraph workflows
+├── 11_local_prompt_engineering.py # Local model prompting
+├── prompts/                       # Prompt engineering demos
+│   ├── 1_demo_basic_invoke.py
+│   ├── 2_demo_parameter_tuning.py
+│   ├── 3_demo_advanced_parameters.py
+│   └── ... (12 total demos)
+├── test_gemini_key.py            # API key tester (pure Python)
+├── test_gemini_langchain.py      # API key tester (LangChain)
+├── run_all_demos.py              # Run all examples
+├── pyproject.toml                # UV/pip dependencies
+└── .env                          # Your API keys (not committed)
 ```
 
-## Switching Providers
+## Configuration
 
-### Method 1: Update `.env` file (Easiest)
+### Environment Variables
 
-Simply edit your `.env` file and change the `PROVIDER`:
+The project supports multiple LLM providers. Configure in `.env`:
 
 ```bash
-# Switch to OpenAI
-PROVIDER=openai
-OPENAI_API_KEY=sk-...
+# Provider Selection
+PROVIDER=gemini  # Options: ollama, openai, gemini
+
+# Google Gemini
+GOOGLE_API_KEY=your-google-api-key-here
+GEMINI_MODEL=gemini-2.5-flash
+
+# OpenAI (optional)
+OPENAI_API_KEY=your-openai-api-key-here
 OPENAI_MODEL=gpt-3.5-turbo
 
-# Switch to Gemini
-PROVIDER=gemini
-GOOGLE_API_KEY=...
-GEMINI_MODEL=gemini-pro
-
-# Switch to Ollama
-PROVIDER=ollama
+# Ollama (optional, for local models)
 OLLAMA_MODEL=deepseek-r1-32b:latest
+OLLAMA_BASE_URL=http://localhost:11434
 ```
 
-### Method 2: Python Code
+### Switching Providers
+
+The project uses a unified configuration system:
 
 ```python
-from llm_config import LLMConfig
+from prompts.llm_config import get_llm
 
-# Switch to OpenAI
-config = LLMConfig(provider="openai", openai_api_key="...")
-llm = config.create_provider()
-
-# Switch to Gemini
-config = LLMConfig(provider="gemini", gemini_api_key="...")
-llm = config.create_provider()
-
-# Switch to Ollama
-config = LLMConfig(provider="ollama")
-llm = config.create_provider()
+# Automatically uses provider from .env
+llm = get_llm()
 ```
 
-**All demos automatically use the provider and model from your `.env` file!**
+## Running Examples
+
+### Run Individual Examples
+
+```bash
+# Using UV (recommended)
+uv run python 1_langchain_hello_lcel.py
+uv run python 7_langchain_rag_basic.py
+uv run python 10_langchain_langgraph.py
+
+# Or directly with Python (if dependencies installed)
+python3 7_langchain_rag_basic.py
+```
+
+### Run All Examples
+
+```bash
+uv run python run_all_demos.py
+```
+
+## Best Practices
+
+### LangChain 1.0+ Patterns
+
+**DO Use:**
+- LCEL with | operator for chaining
+- Runnable interface (.invoke(), .stream(), .batch())
+- RunnableWithMessageHistory for memory
+- @tool decorator for tool definitions
+- StateGraph for complex workflows
+
+**DON'T Use (Deprecated):**
+- LLMChain, SimpleSequentialChain
+- ConversationBufferMemory and related classes
+- Old agent patterns (ZeroShot, Conversational)
+- .run() or .predict() methods
+
+### Code Standards
+
+- **Python**: PEP 8 compliant
+- **Type Hints**: Used throughout for clarity
+- **Documentation**: Comprehensive inline comments
+- **Error Handling**: Graceful failures with helpful messages
+
+### Memory Management
+
+- Use RunnableWithMessageHistory for conversation memory
+- Implement windowing for long conversations
+- Store session history per user/thread
+- Consider token limits when designing memory strategy
+
+### Tool Calling
+
+- Write clear, detailed docstrings (LLM reads these)
+- Use type hints for all tool arguments
+- Return strings for easier LLM parsing
+- Handle errors gracefully
+- Implement retry logic for production
+
+## LangChain 1.0+ Migration Guide
+
+### Key Changes from Pre-1.0
+
+| Old (< 1.0) | New (1.0+) |
+|-------------|-----------|
+| `chain.run()` | `chain.invoke()` |
+| `LLMChain(...)` | LCEL with `\|` |
+| `langchain.llms` | `langchain_core` + providers |
+| `ConversationBufferMemory` | `RunnableWithMessageHistory` |
+| Manual chaining | Automatic with Runnable |
+
+### Example Migration
+
+**Old:**
+```python
+from langchain.chains import LLMChain
+from langchain.llms import OpenAI
+
+chain = LLMChain(llm=OpenAI(), prompt=prompt)
+result = chain.run(input="Hello")
+```
+
+**New:**
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+chain = prompt | ChatOpenAI() | StrOutputParser()
+result = chain.invoke({"input": "Hello"})
+```
+
+## Advanced Techniques
+
+### RAG (Retrieval-Augmented Generation)
+
+See `7_langchain_rag_basic.py` for complete implementation.
+
+**Three Stages:**
+1. **Indexing**: Convert documents to embeddings, store in vector DB
+2. **Retrieval**: Find relevant documents via semantic search
+3. **Generation**: LLM answers using retrieved context
+
+**When to Use:**
+- Domain-specific knowledge
+- Up-to-date information
+- Reducing hallucinations
+- Source attribution
+
+### LangGraph Workflows
+
+See `10_langchain_langgraph.py` for examples.
+
+**Core Concepts:**
+- **StateGraph**: Define nodes and edges
+- **Nodes**: Functions that process state
+- **Edges**: Transitions between nodes
+- **Checkpointing**: Persist state with MemorySaver
+
+**Use Cases:**
+- Multi-step workflows
+- Human-in-the-loop processes
+- Multi-agent collaboration
+- Complex state management
+
+## Troubleshooting
+
+### Import Errors
+
+If you see "module not resolved" errors in VS Code/Cursor:
+
+1. Set Python interpreter:
+   - Press Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows)
+   - Type "Python: Select Interpreter"
+   - Choose `.venv/bin/python`
+
+2. Reload window:
+   - Press Cmd+Shift+P
+   - Type "Developer: Reload Window"
+
+### API Key Issues
+
+**"API key not found":**
+- Ensure `.env` file exists with `GOOGLE_API_KEY=...`
+- Check the key is not wrapped in quotes
+
+**"403 Forbidden" or "API key leaked":**
+- Your key was exposed publicly
+- Generate a new key at Google AI Studio
+
+**"429 Quota exceeded":**
+- You've hit rate limits
+- Wait for quota reset or upgrade to paid tier
+
+### Rate Limits
+
+If you hit rate limits:
+- Implement exponential backoff
+- Cache responses when appropriate
+- Use batch requests
+- Monitor your usage regularly
+
+## Resources
+
+### Documentation
+
+- **LangChain**: https://python.langchain.com/
+- **LangGraph**: https://langchain-ai.github.io/langgraph/
+- **Google Gemini**: https://ai.google.dev/docs
+- **Prompt Engineering**: See `Prompt Engineering Notes.md`
+
+### Additional Files
+
+- **AI Engineering Vocabulary.md**: Comprehensive AI/ML terminology
+- **Prompt Engineering Notes.md**: Detailed prompting techniques
+- **env.example**: Template for environment configuration
+
+## Contributing
+
+When adding new examples:
+
+1. Follow the numbering convention
+2. Use LangChain 1.0+ patterns only
+3. Add comprehensive documentation
+4. Include use case descriptions
+5. Test with multiple providers when possible
+6. Follow PEP 8 style guidelines
+7. No emojis in code or comments
+
+## License
+
+See LICENSE file for details.
+
+## Support
+
+For issues or questions:
+1. Check existing examples for similar patterns
+2. Review documentation in markdown files
+3. Test API keys using test scripts
+4. Verify dependencies with `uv pip list`
+
+---
+
+**Version**: 0.1.0  
+**Python**: 3.11+  
+**LangChain**: 1.0+  
+**LangGraph**: 1.0+  
+
+Last Updated: December 2024
 
