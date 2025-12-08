@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
+from pydantic import BaseModel, Field
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -145,3 +146,31 @@ result = xml_chain.invoke(
     }
 )
 print(f"XML Structured Output:\n{result}")
+
+# Example 6: JSON Structured Output
+print("\n" + "=" * 80)
+print("Example 6: JSON Structured Output")
+print("=" * 80)
+
+# Define the expected data structure
+class Person(BaseModel):
+    name: str = Field(description="The name of the person")
+    age: int = Field(description="The age of the person")
+    skills: list[str] = Field(description="A list of technical skills")
+
+# Set up the parser
+json_parser = JsonOutputParser(pydantic_object=Person)
+
+# Create the prompt with format instructions
+prompt_json = ChatPromptTemplate.from_template(
+    "Generate a profile for a fictional software engineer.\n"
+    "{format_instructions}\n"
+)
+
+# Create the chain
+json_chain = prompt_json | model | json_parser
+
+# Invoke
+result = json_chain.invoke({})
+print(f"JSON Output:\n{result}")
+print(f"Type: {type(result)}")  # Should be <class 'dict'>
