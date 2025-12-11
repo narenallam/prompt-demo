@@ -25,38 +25,38 @@ chain = prompt | model | parser
 result = chain.invoke({"text": "Good morning"})
 print(f"Translation: {result}")
 
-# Example 2: Sync and Async invocation
-print("\n" + "=" * 80)
-print("Example 2: Sync and Async Invocation")
-print("=" * 80)
+# # Example 2: Sync and Async invocation
+# print("\n" + "=" * 80)
+# print("Example 2: Sync and Async Invocation")
+# print("=" * 80)
 
-prompt2 = ChatPromptTemplate.from_template(
-    "Rewrite this text in one concise sentence: {text}"
-)
-model2 = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
-chain2 = prompt2 | model2 | parser
+# prompt2 = ChatPromptTemplate.from_template(
+#     "Rewrite this text in one concise sentence: {text}"
+# )
+# model2 = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+# chain2 = prompt2 | model2 | parser
 
-# Sync invocation
-print("\n--- SYNC ---")
-sync_result = chain2.invoke(
-    {
-        "text": "I wanted to tell you some thing yesterday, which I could'not tell you, but im planning to tell you"
-    }
-)
-print(f"Sync Result: {sync_result}")
+# # Sync invocation
+# print("\n--- SYNC ---")
+# sync_result = chain2.invoke(
+#     {
+#         "text": "I wanted to tell you some thing yesterday, which I could'not tell you, but im planning to tell you"
+#     }
+# )
+# print(f"Sync Result: {sync_result}")
 
-# # Async invocation
-import asyncio
-
-
-async def run_async():
-    print("\n--- ASYNC ---")
-    async_result = await chain2.ainvoke(
-        {
-            "text": "LCEL enables concise, type-safe composition and automatically supports streaming."
-        }
-    )
-    print(f"Async Result: {async_result}")
+# # # Async invocation
+# import asyncio
 
 
-asyncio.run(run_async())
+# async def run_async():
+#     print("\n--- ASYNC ---")
+#     async_result = await chain2.ainvoke(
+#         {
+#             "text": "LCEL enables concise, type-safe composition and automatically supports streaming."
+#         }
+#     )
+#     print(f"Async Result: {async_result}")
+
+
+# asyncio.run(run_async())

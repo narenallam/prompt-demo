@@ -75,6 +75,10 @@ Thumbs.db
 langchain_cache/
 .langchain/
 
+# Vector databases
+chroma_db/
+*.db
+
 # Ruff cache
 .ruff_cache/
 

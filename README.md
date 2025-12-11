@@ -101,8 +101,9 @@ Prompt engineering techniques with LangChain.
 
 #### 3. Self-Reflection (`3_langchain_self_reflection.py`)
 Self-reflection patterns for improved responses.
-- Critique and refine pattern
-- Iterative improvement
+- Draft → Critique → Revise pattern
+- Uses RunnablePassthrough.assign() (modern LCEL pattern)
+- Iterative improvement through self-critique
 
 #### 4. Chain-of-Thought, Tree-of-Thought (`4_cot_tot_got.py`)
 Advanced reasoning techniques.
@@ -122,7 +123,7 @@ Deep dive into the Runnable interface.
 - Custom runnables
 
 #### 7. RAG - Retrieval-Augmented Generation (`7_langchain_rag_basic.py`)
-Complete RAG pipeline implementation.
+Complete RAG pipeline implementation with in-memory vector store.
 
 **What is RAG?**
 - Retrieval: Find relevant information from knowledge base
@@ -138,9 +139,37 @@ Complete RAG pipeline implementation.
 Uses an unpublished movie screenplay ("The Last Cipher" by Director Sofia Ramirez) to demonstrate how RAG allows the LLM to answer questions about content it was never trained on.
 
 **Components:**
-- Vector store for semantic search
+- Custom SimpleVectorStore for demonstration
 - Embedding model (Gemini embedding-001)
 - LCEL chain for retrieval + generation
+- Cosine similarity for semantic search
+
+#### 7.1. RAG with ChromaDB (`7_1_langchain_rag_chromadb.py`)
+Production-ready RAG using ChromaDB vector database.
+
+**ChromaDB Features:**
+- Persistent storage (saves to disk)
+- Fast similarity search with optimized indexing
+- Metadata filtering capabilities
+- Multiple distance metrics (L2, cosine, inner product)
+- Production-ready and scalable
+
+**Advanced Features Demonstrated:**
+- Similarity search with relevance scores
+- Metadata filtering (filter by author, year, etc.)
+- MMR (Maximal Marginal Relevance) for diverse results
+- Persistent storage in `./chroma_db` directory
+
+**Installation Required:**
+```bash
+pip install chromadb langchain-chroma
+```
+
+**When to Use ChromaDB vs In-Memory:**
+- Use ChromaDB for production applications
+- Use in-memory store for quick prototypes/demos
+- ChromaDB handles larger datasets efficiently
+- Persistent storage survives application restarts
 
 #### 8. Memory Systems (`8_langchain_memory.py`)
 Conversation memory patterns (LangChain 1.0+).
@@ -339,11 +368,12 @@ prompt-demo/
 ├── 0_sample_langchain.py          # Basic LangChain intro
 ├── 1_langchain_hello_lcel.py      # LCEL introduction
 ├── 2_langchain_prompt_engineering.py  # Prompt patterns
-├── 3_langchain_self_reflection.py # Self-reflection
+├── 3_langchain_self_reflection.py # Self-reflection with RunnablePassthrough
 ├── 4_cot_tot_got.py               # Advanced reasoning
 ├── 5_langchain_tot_got.py         # LangChain reasoning
 ├── 6_langchain_runnables_lcel.py  # Runnables deep dive
-├── 7_langchain_rag_basic.py       # RAG pipeline
+├── 7_langchain_rag_basic.py       # RAG with in-memory vector store
+├── 7_1_langchain_rag_chromadb.py  # RAG with ChromaDB (production)
 ├── 8_langchain_memory.py          # Memory systems
 ├── 9_langchain_agents_tools.py    # Agents & tools
 ├── 10_langchain_langgraph.py      # LangGraph workflows
@@ -357,6 +387,7 @@ prompt-demo/
 ├── test_gemini_langchain.py      # API key tester (LangChain)
 ├── run_all_demos.py              # Run all examples
 ├── pyproject.toml                # UV/pip dependencies
+├── requirements.txt              # Pip dependencies
 └── .env                          # Your API keys (not committed)
 ```
 
@@ -401,11 +432,14 @@ llm = get_llm()
 ```bash
 # Using UV (recommended)
 uv run python 1_langchain_hello_lcel.py
+uv run python 3_langchain_self_reflection.py
 uv run python 7_langchain_rag_basic.py
+uv run python 7_1_langchain_rag_chromadb.py  # Requires chromadb
 uv run python 10_langchain_langgraph.py
 
 # Or directly with Python (if dependencies installed)
 python3 7_langchain_rag_basic.py
+python3 7_1_langchain_rag_chromadb.py
 ```
 
 ### Run All Examples
@@ -421,6 +455,9 @@ uv run python run_all_demos.py
 **DO Use:**
 - LCEL with | operator for chaining
 - Runnable interface (.invoke(), .stream(), .batch())
+- RunnablePassthrough for data flow
+- RunnableMap for parallel execution
+- RunnableLambda for custom functions
 - RunnableWithMessageHistory for memory
 - @tool decorator for tool definitions
 - StateGraph for complex workflows
@@ -431,12 +468,73 @@ uv run python run_all_demos.py
 - Old agent patterns (ZeroShot, Conversational)
 - .run() or .predict() methods
 
+### Understanding Runnables
+
+**Core Runnable Types:**
+
+1. **RunnablePassthrough**: Pass data through while optionally adding fields
+   ```python
+   # Preserves input, adds computed fields
+   chain = RunnablePassthrough.assign(draft=draft_chain)
+   ```
+
+2. **RunnableMap** / **RunnableParallel**: Execute branches in parallel
+   ```python
+   # Runs french and summary simultaneously
+   map_chain = RunnableMap({
+       "french": translate_chain,
+       "summary": summary_chain
+   })
+   ```
+
+3. **RunnableLambda**: Wrap custom Python functions
+   ```python
+   # Add custom logic to chains
+   chain = prompt | model | RunnableLambda(custom_parser)
+   ```
+
+4. **RunnableBranch**: Conditional routing
+   ```python
+   # Route based on conditions
+   branch = RunnableBranch(
+       (condition1, chain1),
+       (condition2, chain2),
+       default_chain
+   )
+   ```
+
+**When to Use:**
+- **RunnablePassthrough**: Self-reflection, multi-step enrichment
+- **RunnableMap**: Multi-output generation, speed optimization
+- **RunnableLambda**: Custom parsing, API calls, data transformation
+- **RunnableBranch**: Multi-intent routing, dynamic prompts
+
+**Key Insight**: Only RunnableMap/RunnableParallel execute in parallel—everything else is sequential!
+
 ### Code Standards
 
 - **Python**: PEP 8 compliant
+- **Line Length**: 88 characters (Black formatter standard)
 - **Type Hints**: Used throughout for clarity
 - **Documentation**: Comprehensive inline comments
 - **Error Handling**: Graceful failures with helpful messages
+- **Imports**: All imports at top of file, before any executable code
+
+**Linting Configuration:**
+
+Create `.flake8` in project root:
+```ini
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude = .git,__pycache__,.venv,venv,build,dist,chroma_db
+```
+
+**Formatting Tips:**
+- Use parentheses for implicit line continuation
+- Break long chains across multiple lines
+- Use `# noqa: E501` sparingly for unavoidable long lines
+- Extract complex expressions to variables for readability
 
 ### Memory Management
 
@@ -489,18 +587,29 @@ result = chain.invoke({"input": "Hello"})
 
 ### RAG (Retrieval-Augmented Generation)
 
-See `7_langchain_rag_basic.py` for complete implementation.
+See `7_langchain_rag_basic.py` for basic implementation and `7_1_langchain_rag_chromadb.py` for production-ready version.
 
 **Three Stages:**
 1. **Indexing**: Convert documents to embeddings, store in vector DB
 2. **Retrieval**: Find relevant documents via semantic search
 3. **Generation**: LLM answers using retrieved context
 
+**Vector Store Options:**
+- **In-Memory** (`7_langchain_rag_basic.py`): Quick prototypes, demos
+- **ChromaDB** (`7_1_langchain_rag_chromadb.py`): Production apps, persistent storage
+- **Others**: FAISS, Pinecone, Weaviate, Qdrant
+
 **When to Use:**
 - Domain-specific knowledge
 - Up-to-date information
 - Reducing hallucinations
 - Source attribution
+
+**ChromaDB Advantages:**
+- Persistent storage across sessions
+- Metadata filtering (filter by author, date, category)
+- MMR search for result diversity
+- Better performance at scale
 
 ### LangGraph Workflows
 

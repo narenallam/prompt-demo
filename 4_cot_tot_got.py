@@ -5,12 +5,12 @@ Demonstrates the three major reasoning patterns with single prompt examples.
 
 from dotenv import load_dotenv
 
-load_dotenv()
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+load_dotenv()
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
 
 # ============================================================================
@@ -28,7 +28,8 @@ def chain_of_thought_example():
     print("=" * 80)
 
     cot_prompt = ChatPromptTemplate.from_template(
-        """Solve this problem using step-by-step reasoning. Show your work clearly.
+        """Solve this problem using step-by-step reasoning. Show your work
+         clearly.
 
 Problem: {question}
 
@@ -69,7 +70,8 @@ def tree_of_thought_example():
     print("=" * 80)
 
     tot_prompt = ChatPromptTemplate.from_template(
-        """Solve this problem by exploring MULTIPLE different reasoning paths, then compare them.
+        """Solve this problem by exploring MULTIPLE different reasoning paths,
+         then compare them.
 
 Problem: {question}
 
@@ -86,9 +88,8 @@ Solution:
 
     tot_chain = tot_prompt | llm | StrOutputParser()
 
-    question = (
-        "Should a startup prioritize growth or profitability in its first 2 years?"
-    )
+    question = """Should a startup prioritize growth or profitability in its
+     first 2" "years?"""
 
     print(f"\n Question: {question}\n")
     print(" Tree of Thought - Multiple Paths:\n")
@@ -113,12 +114,14 @@ def graph_of_thought_example():
     print("=" * 80)
 
     got_prompt = ChatPromptTemplate.from_template(
-        """Solve this problem by building a graph of interconnected reasoning nodes.
+        """Solve this problem by building a graph of interconnected reasoning
+         nodes.
 
 Problem: {question}
 
 Instructions:
-1. Identify 4-5 key sub-questions or concepts (nodes) needed to solve this problem
+1. Identify 4-5 key sub-questions or concepts (nodes) needed to solve this
+problem
 2. For each node, identify its dependencies (which other nodes it relies on)
 3. Solve the nodes in dependency order (solve dependencies first)
 4. Show how insights from one node inform others
@@ -137,7 +140,8 @@ Solution:
 
     got_chain = got_prompt | llm | StrOutputParser()
 
-    question = "How can a city reduce traffic congestion while improving air quality and maintaining economic activity?"
+    question = """How can a city reduce traffic congestion while improving air
+     quality and maintaining economic activity?"""
 
     print(f"\n Question: {question}\n")
     print("  Graph of Thought - Interconnected Reasoning:\n")

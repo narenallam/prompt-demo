@@ -13,75 +13,76 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-model = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+model = ChatGoogleGenerativeAI(model="gemini-2.5-pro")
 parser = StrOutputParser()
 
-# Example 1: Role Prompting (System Prompts)
-print("=" * 80)
-print("Example 1: Role Prompting (System Prompts)")
-print("=" * 80)
+# # Example 1: Role Prompting (System Prompts)
+# print("=" * 80)
+# print("Example 1: Role Prompting (System Prompts)")
+# print("=" * 80)
 
-prompt_role = ChatPromptTemplate.from_template(
-    "Write a short product tagline for: {idea}"
-)
+# prompt_role = ChatPromptTemplate.from_template(
+#     "Write a short product tagline for: {idea}"
+# )
 
-# Deterministic model for factual tasks
-llm_strict = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+# # Deterministic model for factual tasks
+# llm_strict = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
-# Creative model for brainstorming
-llm_creative = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=1.5)
+# # Creative model for brainstorming
+# llm_creative = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=1.5)
 
-chain_strict = prompt_role | llm_strict | parser
-chain_creative = prompt_role | llm_creative | parser
+# chain_strict = prompt_role | llm_strict | parser
+# chain_creative = prompt_role | llm_creative | parser
 
-idea = {"idea": "a privacy-first note-taking app"}
-print(f"\nStrict: {chain_strict.invoke(idea)}")
-print(f"Creative: {chain_creative.invoke(idea)}")
+# idea = {"idea": "a privacy-first note-taking app"}
+# print(f"\nStrict: {chain_strict.invoke(idea)}")
+# print(f"Creative: {chain_creative.invoke(idea)}")
 
 # Example 2: System Message Role
-print("\n" + "=" * 80)
-print("Example 2: System Message Role")
-print("=" * 80)
+# print("\n" + "=" * 80)
+# print("Example 2: System Message Role")
+# print("=" * 80)
 
-prompt_messages = [
-    SystemMessage(
-        content="You are a helpful assistant who translates English to French. "
-        "You only reply with the French translation and nothing else."
-    ),
-    HumanMessage(content="Hello, how are you?"),
-]
+# prompt_messages = [
+#     SystemMessage(
+#         content="You are a helpful assistant who translates English to Fresh. "
+#         "You only reply with the French translation and nothing else."
+#     ),
+#     HumanMessage(content="Hello, how are you?"),
+# ]
 
-response = model.invoke(prompt_messages)
-print(f"Translation: {response.content}")
+# response = model.invoke(prompt_messages)
+# print(f"Translation: {response.content}")
 
-# Example 3: Few-Shot Prompting
-print("\n" + "=" * 80)
-print("Example 3: Few-Shot Prompting")
-print("=" * 80)
+# # Example 3: Few-Shot Prompting
+# print("\n" + "=" * 80)
+# print("Example 3: Few-Shot Prompting")
+# print("=" * 80)
 
-few_shot_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are a sentiment classifier. Respond with POSITIVE, NEGATIVE, or NEUTRAL.",
-        ),
-        # --- Examples ---
-        ("human", "This new update is amazing!"),
-        ("ai", "POSITIVE"),
-        ("human", "I'm not sure if I like this design."),
-        ("ai", "NEUTRAL"),
-        ("human", "The app keeps crashing."),
-        ("ai", "NEGATIVE"),
-        # --- End Examples ---
-        ("human", "{text_to_classify}"),
-    ]
-)
+# few_shot_prompt = ChatPromptTemplate.from_messages(
+#     [
+#         (
+#             "system",
+#             "You are a sentiment classifier. Respond with POSITIVE, NEGATIVE, or NEUTRAL.",
+#         ),
+#         # --- Examples ---
+#         ("human", "This new update is amazing!"),
+#         ("ai", "POSITIVE"),
+#         ("human", "I'm not sure if I like this design."),
+#         ("ai", "NEUTRAL"),
+#         ("human", "The app keeps crashing."),
+#         ("ai", "NEGATIVE"),
+#         # --- End Examples ---
+#         ("human", "{text_to_classify}"),
+#     ]
+# )
 
-classifier_chain = few_shot_prompt | model | parser
-result = classifier_chain.invoke(
-    {"text_to_classify": "I'm skeptical about the success of the movie"}
-)
-print(f"Sentiment: {result}")
+# classifier_chain = few_shot_prompt | model | parser
+# result = classifier_chain.invoke(
+#     # {"text_to_classify": "I'm skeptical about the success of the movie"}
+#     {"text_to_classify": "I dont like that person"}
+# )
+# print(f"Sentiment: {result}")
 
 # Example 4: Chain-of-Thought (CoT) Prompting
 print("\n" + "=" * 80)
@@ -117,60 +118,58 @@ cot_chain = prompt_cot_generate | model | parser
 result = cot_chain.invoke(
     {
         "question": """Mr Rao, usually picks his son from the school
- everyday evening. One day school closed earlier, his son did not wait at the schol,
- instead he walks towards home. Mr Rao started to pick his son in usual time, 
- but found his son on the way to home, and returned back with him, 
- on that day he arrived the home 15 mins earlier. What is the distance 
+ everyday evening. One day school closed earlier, his son did not wait at the school, instead he walks towards home. Mr Rao started to pick his son in usual time, but found his son on the way to home, and returned back with him,
+ on that day he arrived the home 15 mins earlier. What is the distance
  between his school and the home?. Think step-by-step and come to the answer"""
     }
 )
 print(f"CoT Answer:\n{result}")
 
-# Example 5: Structural Prompting (XML Tags)
-print("\n" + "=" * 80)
-print("Example 5: Structural Prompting (XML Tags)")
-print("=" * 80)
+# # Example 5: Structural Prompting (XML Tags)
+# print("\n" + "=" * 80)
+# print("Example 5: Structural Prompting (XML Tags)")
+# print("=" * 80)
 
-prompt_xml = ChatPromptTemplate.from_template(
-    "Extract the key information from the following text. "
-    "Return your answer inside <response> XML tags. "
-    "Provide a <title> and a <summary_points> list with <point> tags.\n\n"
-    "<text>{text_input}</text>\n\n"
-    "<response>"
-)
+# prompt_xml = ChatPromptTemplate.from_template(
+#     "Extract the key information from the following text. "
+#     "Return your answer inside <response> XML tags. "
+#     "Provide a <title> and a <summary_points> list with <point> tags.\n\n"
+#     "<text>{text_input}</text>\n\n"
+#     "<response>"
+# )
 
-xml_chain = prompt_xml | model | parser
-result = xml_chain.invoke(
-    {
-        "text_input": "LangChain 1.0 introduces LCEL for composable AI pipelines. It supports streaming, async, and automatic retries."
-    }
-)
-print(f"XML Structured Output:\n{result}")
+# xml_chain = prompt_xml | model | parser
+# result = xml_chain.invoke(
+#     {
+#         "text_input": "LangChain 1.0 introduces LCEL for composable AI pipelines. It supports streaming, async, and automatic retries."
+#     }
+# )
+# print(f"XML Structured Output:\n{result}")
 
-# Example 6: JSON Structured Output
-print("\n" + "=" * 80)
-print("Example 6: JSON Structured Output")
-print("=" * 80)
+# # Example 6: JSON Structured Output
+# print("\n" + "=" * 80)
+# print("Example 6: JSON Structured Output")
+# print("=" * 80)
 
-# Define the expected data structure
-class Person(BaseModel):
-    name: str = Field(description="The name of the person")
-    age: int = Field(description="The age of the person")
-    skills: list[str] = Field(description="A list of technical skills")
+# # Define the expected data structure
+# class Person(BaseModel):
+#     name: str = Field(description="The name of the person")
+#     age: int = Field(description="The age of the person")
+#     skills: list[str] = Field(description="A list of technical skills")
 
-# Set up the parser
-json_parser = JsonOutputParser(pydantic_object=Person)
+# # Set up the parser
+# json_parser = JsonOutputParser(pydantic_object=Person)
 
-# Create the prompt with format instructions
-prompt_json = ChatPromptTemplate.from_template(
-    "Generate a profile for a fictional software engineer.\n"
-    "{format_instructions}\n"
-)
+# # Create the prompt with format instructions
+# prompt_json = ChatPromptTemplate.from_template(
+#     "Generate a profile for a fictional software engineer.\n"
+#     "{format_instructions}\n"
+# )
 
-# Create the chain
-json_chain = prompt_json | model | json_parser
+# # Create the chain
+# json_chain = prompt_json | model | json_parser
 
-# Invoke
-result = json_chain.invoke({})
-print(f"JSON Output:\n{result}")
-print(f"Type: {type(result)}")  # Should be <class 'dict'>
+# # Invoke
+# result = json_chain.invoke({})
+# print(f"JSON Output:\n{result}")
+# print(f"Type: {type(result)}")  # Should be <class 'dict'>

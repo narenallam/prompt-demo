@@ -1,16 +1,14 @@
-"""
-LangChain Example 3: Chain-Of-Thought with Self-Reflection / Self-Critique Pattern
-Demonstrates using the LLM to improve its own output: Draft -> Critique -> Revise.
-"""
+# LangChain Example 3: Chain-Of-Thought with Self-Reflection / Self-Critique
+# Pattern Demonstrates using the LLM to improve its own output: Draft ->
+# Critique -> Revise.
 
 from dotenv import load_dotenv
-
-load_dotenv()
-
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableMap
+from langchain_core.runnables import RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
+
+load_dotenv()
 
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
 
@@ -45,19 +43,16 @@ draft_chain = draft_prompt | llm | StrOutputParser()
 critique_chain = critique_prompt | llm | StrOutputParser()
 revise_chain = revise_prompt | llm | StrOutputParser()
 
-# Define the data flow
-# 1. Run the draft chain
-# 2. Pass the draft and original question to the critique chain
+# Define the data flow using RunnablePassthrough
+# 1. Run the draft chain and add 'draft' to input dict
+# 2. Run the critique chain and add 'critique' to input dict
 # 3. Pass all three (draft, question, critique) to the revise chain
+# RunnablePassthrough automatically preserves existing keys
+# while adding new ones
+
 pipeline = (
-    RunnableMap({"draft": draft_chain, "question": lambda x: x["question"]})
-    | RunnableMap(
-        {
-            "critique": (lambda x: {"draft": x["draft"]}) | critique_chain,
-            "question": lambda x: x["question"],
-            "draft": lambda x: x["draft"],
-        }
-    )
+    RunnablePassthrough.assign(draft=draft_chain)
+    | RunnablePassthrough.assign(critique=critique_chain)
     | revise_chain
 )
 
