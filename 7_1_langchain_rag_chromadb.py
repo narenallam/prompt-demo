@@ -184,7 +184,9 @@ for query in queries:
 
     # Optional: Show which documents were retrieved
     retrieved_docs = retriever.invoke(query)
-    print(f"📄 Retrieved {len(retrieved_docs)} documents (chunks {', '.join(str(doc.metadata['chunk_id']) for doc in retrieved_docs)})")
+    print(
+        f"📄 Retrieved {len(retrieved_docs)} documents (chunks {', '.join(str(doc.metadata['chunk_id']) for doc in retrieved_docs)})"
+    )
 
 print("\n" + "=" * 80)
 print("RAG SUCCESS with ChromaDB!")
